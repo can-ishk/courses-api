@@ -1,9 +1,9 @@
 # Courses API
 
 ### Tech Stack
-> Python, FastAPI
-> MongoDB Atlas
-> Docker
+> - Python, FastAPI
+> - MongoDB Atlas
+> - Docker
 
 ### API Endpoints
 
