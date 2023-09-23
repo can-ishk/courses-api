@@ -22,14 +22,22 @@ def get_courses(sort_by: str = 'date', domain: str = None):
     if domain:
         query = {'domain': domain}
     try:
-            courses = db["courses"].find(query, {'name': 1, 'date': 1, 'description': 1, 'domain':1,'rating':1,'_id': 0}).sort(sort_criteria)
+            courses = db["courses"].find(query, {'_id': 0, 'chapters':0}).sort(sort_criteria)
     except:
         raise HTTPException(status_code=500, detail="Internal server error")
+    if not courses:
+        raise HTTPException(status_code=404, detail="Courses not found")
     return list(courses)
 
 @app.get("/courses/{course_id}")
-def get_course_by_id():
-    pass
+def get_course_by_id(course_id: str):
+    try:
+         course = db.courses.find_one({'_id': ObjectId(course_id)}, {'_id': 0})
+    except:
+         raise HTTPException(status_code=500, detail="Internal server error")
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
+    return course
 
 @app.get("/courses/{course_id}/{chapter_id}")
 def get_chapter_by_id():
