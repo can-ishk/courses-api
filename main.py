@@ -41,12 +41,7 @@ def get_course_by_id(course_id: str):
 
 @app.get("/courses/{course_id}/{chapter_id}")
 def get_chapter_by_id(course_id: str, chapter_id: str):
-    try:
-         course = db.courses.find_one({'_id': ObjectId(course_id)}, {'_id': 0})
-    except:
-         raise HTTPException(status_code=500, detail="Internal server error")
-    if not course:
-        raise HTTPException(status_code=404, detail="Course not found")
+    course = get_course_by_id(course_id)
     chapter = None
     if len(course['chapters']) > int(chapter_id):
         chapter = course['chapters'][int(chapter_id)]
@@ -55,5 +50,19 @@ def get_chapter_by_id(course_id: str, chapter_id: str):
     return chapter
 
 @app.post("/rate/courses/{course_id}/{chapter_id}")
-def rate_chapter():
-    pass
+def rate_chapter(course_id:str, chapter_id:str, rating: int):
+    course = get_course_by_id(course_id)
+    if len(course['chapters']) <= int(chapter_id):
+        raise HTTPException(status_code=404, detail="Chapter not found")
+    if rating not in [1, -1]:
+        raise HTTPException(status_code=400, detail="Rating must be -1 or 1")
+    course['chapters'][int(chapter_id)]['rating']['total'] += rating
+    course['chapters'][int(chapter_id)]['rating']['count'] += 1
+    course['rating']['total'] += rating
+    course['rating']['count'] += 1
+    try:
+        db.courses.update_one({'_id': ObjectId(course_id)}, {"$set": course})
+    except:
+        raise HTTPException(status_code=500, detail="Internal server error")
+    return course
+    
