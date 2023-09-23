@@ -52,7 +52,7 @@ def get_chapter_by_id(course_id: str, chapter_id: str):
     return chapter
 
 @app.post("/rate/courses/{course_id}/{chapter_id}")
-def rate_chapter(course_id:str, chapter_id:str, rating: int):
+def rate_chapter(course_id:str, chapter_id:str, rating: int = 1):
     course = get_course_by_id(course_id)
     if len(course['chapters']) <= int(chapter_id):
         raise HTTPException(status_code=404, detail="Chapter not found")
