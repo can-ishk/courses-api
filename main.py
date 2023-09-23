@@ -40,8 +40,19 @@ def get_course_by_id(course_id: str):
     return course
 
 @app.get("/courses/{course_id}/{chapter_id}")
-def get_chapter_by_id():
-    pass
+def get_chapter_by_id(course_id: str, chapter_id: str):
+    try:
+         course = db.courses.find_one({'_id': ObjectId(course_id)}, {'_id': 0})
+    except:
+         raise HTTPException(status_code=500, detail="Internal server error")
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
+    chapter = None
+    if len(course['chapters']) > int(chapter_id):
+        chapter = course['chapters'][int(chapter_id)]
+    else:
+        raise HTTPException(status_code=404, detail="Chapter not found")
+    return chapter
 
 @app.post("/rate/courses/{course_id}/{chapter_id}")
 def rate_chapter():
