@@ -1,13 +1,15 @@
-import contextlib
 from fastapi import FastAPI, HTTPException, Query
 from pymongo import MongoClient
 from bson import ObjectId
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+Mongo_URI = os.getenv('MONGO_URI')
 
 app = FastAPI()
-db_client = MongoClient("mongodb://localhost:27017/")
-db = db_client["courses"]
+db_client = MongoClient(Mongo_URI)
+db = db_client["sharedDatabase"]
 
 sorting_matrix = {
         'date': [('date', -1)], # date, descending
